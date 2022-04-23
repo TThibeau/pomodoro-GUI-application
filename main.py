@@ -8,22 +8,21 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
-WORK_MIN = 25
-SHORT_BREAK_MIN = 5
-LONG_BREAK_MIN = 20
+WORK_MIN = 0.1
+SHORT_BREAK_MIN = 0.1
+LONG_BREAK_MIN = 0.1
 timer = None
 session_nr = 1
-start_pressed = 0   # Used to track if start button has already been pressed
 
 # ---------------------------- TIMER RESET ------------------------------- # 
 def reset_timer():
     window.after_cancel(timer)
     canvas.itemconfig(timer_text,text="00:00")
-    global session_nr, start_pressed
+    global session_nr
     session_nr = 1
-    start_pressed = 0
     sc_label.config(text="")
     timer_label.config(text="Timer",fg=GREEN)
+    start_button.config(state='normal')
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
 def add_checkmark():
     global session_nr
@@ -33,26 +32,29 @@ def add_checkmark():
     sc_label.config(text=check_str)
 
 def start_timer():
-    global session_nr, start_pressed
-    if start_pressed < 1:
-        start_pressed +=1
-        if session_nr % 8 == 0:     # Long break session
-            add_checkmark()
-            timer_label.config(text="Long break",fg=PINK)
-            timer_length = LONG_BREAK_MIN*60
+    global session_nr
+    print(session_nr)
+    print(session_nr % 2)
+    start_button.config(state='disabled')
+    if session_nr % 8 == 0:     # Long break session
+        add_checkmark()
+        timer_label.config(text="Long break",fg=PINK)
+        timer_length = LONG_BREAK_MIN*60
 
-        elif session_nr % 2 == 0:    # Short break session
-            add_checkmark()
-            timer_label.config(text="Short break",fg=GREEN)
-            timer_length = SHORT_BREAK_MIN*60
+    elif session_nr % 2 == 0:    # Short break session
+        print("Short break session")
+        add_checkmark()
+        timer_label.config(text="Short break",fg=GREEN)
+        timer_length = SHORT_BREAK_MIN*60
 
-        else:                        # Work session
-            timer_label.config(text="Work",fg=RED)
-            timer_length = WORK_MIN*60
+    else:                        # Work session
+        print("Work session")
+        timer_label.config(text="Work",fg=RED)
+        timer_length = WORK_MIN*60
 
-        session_nr += 1
+    session_nr += 1
 
-        count_down(timer_length)
+    count_down(timer_length)
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- # 
 def count_down(count):
